@@ -1,20 +1,19 @@
 from flask import Flask, request, jsonify
 from kafka import KafkaProducer
-import logging  # Import the logging module
+import logging
+from datetime import datetime
+import json
 
 app = Flask(__name__)
-# Set the logging level to DEBUG for the entire application
 logging.basicConfig(level=logging.DEBUG)
 
-# Configure Kafka producer
 producer = KafkaProducer(
-    bootstrap_servers='localhost:9092',  # Replace with your Kafka broker list
-    key_serializer=lambda k: str(k).encode('utf-8'),  # Serialize the key as UTF-8 string
-    value_serializer=lambda v: str(v).encode('utf-8')  # Serialize the value as UTF-8 string
+    bootstrap_servers='localhost:9092',
+    key_serializer=lambda k: json.dumps(k).encode('utf-8'),  # Serialize the key as JSON
+    value_serializer=lambda v: json.dumps(v).encode('utf-8')  # Serialize the value as JSON
 )
 
-# Define the Kafka topic where messages will be emitted
-kafka_topic = 'questions_processor'  # Replace with your Kafka topic name
+kafka_topic = 'questions_processor'
 
 @app.route('/question', methods=['POST'])
 def send_message():
@@ -23,16 +22,17 @@ def send_message():
         id_user = data.get('id_user')
         id_question = data.get('id_question')
 
-        # Construct the message payload as a dictionary
+        create_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
         message = {
-            'id_user': id_user,
-            'name': data.get('name'),
-            'questionnaire_type': data.get('questionnaire_type'),
-            'id_question': id_question,
-            'respuesta': data.get('respuesta')
+            "id_user": id_user,
+            "name": data.get('name'),
+            "questionnaire_type": data.get('questionnaire_type'),
+            "id_question": id_question,
+            "respuesta": data.get('respuesta'),
+            "create_timestamp": create_timestamp
         }
 
-        # Emit the message to the Kafka topic with the specified key
         key = f'{id_user}+{id_question}'
         producer.send(kafka_topic, key=key, value=message)
         producer.flush()
@@ -44,7 +44,7 @@ def send_message():
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return 'pong', 200  # Respond with 'pong' and HTTP 200 status code
-    
+    return 'pong', 200
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
