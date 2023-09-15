@@ -3,6 +3,21 @@ from kafka import KafkaProducer
 import psycopg2
 from psycopg2 import sql
 import json
+from flask import Flask, request
+
+# Create a Flask app
+app = Flask(__name__)
+
+# Define a health check endpoint
+@app.route('/health', methods=['GET'])
+def health_check():
+    return 'pong', 200  # Respond with 'pong' and HTTP 200 status code
+
+# Run the Flask app
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5001)
+
+
 
 # Define Kafka consumer configuration
 consumer_config = {
