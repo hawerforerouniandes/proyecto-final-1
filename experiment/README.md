@@ -35,21 +35,21 @@ Now it is necessary to defined the next topics according to our needs
 --replication-factor 1 \
 --partitions 1 \
 --config retention.ms=-1 \
---topic demo
+--topic questions_processor
 ```
 
 ### Publishing and Consuming Messages
 In this steps you will be able to emit an message and cosume it using kafka-client and kafka-consumer tools that are already installed into the kafka container 
 Open a new terminal in the same place and execute next command
 ```
-/opt/kafka-client/bin/kafka-console-consumer.sh --topic demo \
+/opt/kafka-client/bin/kafka-console-consumer.sh --topic questions_processor \
 --bootstrap-server localhost:9092
 ```
 
 now go back to the first terminal , execute next command and after that emit type a meesage, to emit it press enter
 
 ```
-/opt/kafka-client/bin/kafka-console-consumer.sh --topic demo \
+/opt/kafka-client/bin/kafka-console-consumer.sh --topic questions_processor \
 --bootstrap-server localhost:9092
 ```
 
