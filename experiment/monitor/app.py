@@ -3,9 +3,6 @@ import json
 import logging
 import uuid
 from datetime import datetime
-from apscheduler.schedulers.background import BackgroundScheduler
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
 import requests
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -44,15 +41,19 @@ def call_api_endpoint():
 def call_command():
     url = "http://localhost:5000/health"
     # Make the API request
-
-    response = requests.get(url)
-    if response.status_code == 200:
+    status_code = 0
+    try:
+        response = requests.get(url, timeout=10)
+        status_code = response.status_code
+    except:
+        status_code = 500
+    if status_code == 200:
         logger.info("API call command successful")
         send_topic_message("Command", "OK")
         # Process the API response data as needed
         # ...
     else:
-        logger.info(f"Failed to call API. Status code: {response.status_code}")
+        logger.info(f"Failed to call API. Status code: {status_code}")
         send_topic_message("Command", "FAILED")
 
 
@@ -60,14 +61,19 @@ def call_command_processor():
     url = "http://localhost:5001/health"
     # Make the API request
 
-    response = requests.get(url)
-    if response.status_code == 200:
+    status_code = 0
+    try:
+        response = requests.get(url, timeout=10)
+        status_code = response.status_code
+    except:
+        status_code = 500
+    if status_code == 200:
         logger.info("API call command processor successful")
         send_topic_message("Command Processor", "OK")
         # Process the API response data as needed
         # ...
     else:
-        logger.info(f"Failed to call API. Status code: {response.status_code}")
+        logger.info(f"Failed to call API. Status code: {status_code}")
         send_topic_message("Command Processor", "FAILED")
 
 
@@ -80,6 +86,7 @@ logging.basicConfig(filename='monitorlogs.log',
 
 logger = logging.getLogger('Monitor')
 if __name__ == '__main__':
+    call_api_endpoint()
     job = scheduler.add_job(call_api_endpoint, 'interval', minutes=1)
     try:
         scheduler.start()
