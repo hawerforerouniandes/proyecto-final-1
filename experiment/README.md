@@ -51,6 +51,16 @@ the second one is the topic that hold the transaction errors between processor a
 --topic questions_processor_failed
 ```
 
+the third one is the topic that hold the messages published from monitor component
+```
+/opt/kafka-client/bin/kafka-topics.sh --create \
+--bootstrap-server localhost:9092 \
+--replication-factor 1 \
+--partitions 1 \
+--config retention.ms=-1 \
+--topic monitor
+```
+
 ### Publishing and Consuming Messages
 In this steps you will be able to emit an message and cosume it using kafka-client and kafka-consumer tools that are already installed into the kafka container 
 Open a new terminal in the same place and execute next command
