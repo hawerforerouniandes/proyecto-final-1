@@ -3,11 +3,14 @@ import json
 import logging
 import uuid
 from datetime import datetime
+from apscheduler.schedulers.background import BackgroundScheduler
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
 import requests
+from apscheduler.schedulers.blocking import BlockingScheduler
 from kafka import KafkaProducer
+
 
 producer = KafkaProducer(
     bootstrap_servers='localhost:9092',
@@ -15,6 +18,9 @@ producer = KafkaProducer(
     value_serializer=lambda v: json.dumps(v).encode('utf-8')  # Serialize the value as JSON
 )
 kafka_topic = 'monitor'
+
+scheduler = BlockingScheduler()
+
 
 def send_topic_message(ms, status):
     monitor_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -74,6 +80,10 @@ logging.basicConfig(filename='monitorlogs.log',
 
 logger = logging.getLogger('Monitor')
 if __name__ == '__main__':
-    call_api_endpoint()
+    job = scheduler.add_job(call_api_endpoint, 'interval', minutes=1)
+    try:
+        scheduler.start()
+    except (KeyboardInterrupt, SystemExit):
+        pass
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
