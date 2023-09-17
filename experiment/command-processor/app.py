@@ -5,6 +5,7 @@ from psycopg2 import sql
 import json
 import http.server
 import socketserver
+import threading
 
 # Define Kafka consumer configuration
 consumer_config = {
@@ -45,10 +46,20 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(b'Not Found')
 
 # Create a socket server with the custom request handler
-with socketserver.TCPServer(('', 5001), MyHandler) as httpd:
-    print('Server started on port 5001...')
-    
-    # Continuously poll for new Kafka messages
+def run_http_server():
+    with socketserver.TCPServer(('', 5001), MyHandler) as httpd:
+        print('Server started on port 5001...')
+        httpd.serve_forever()
+
+# Define a function to process Kafka messages
+def process_kafka_messages():
+    # Create a Kafka producer
+    producer = KafkaProducer(
+        bootstrap_servers='localhost:9092',
+        key_serializer=lambda k: json.dumps(k).encode('utf-8'),  # Serialize the key as JSON
+        value_serializer=lambda v: json.dumps(v).encode('utf-8')  # Serialize the value as JSON
+    )
+
     while True:
         msg = consumer.poll(1.0)
 
@@ -103,9 +114,14 @@ with socketserver.TCPServer(('', 5001), MyHandler) as httpd:
             except Exception as e:
                 print(f'Error parsing or saving message: {str(e)}')
 
-        # Handle KeyboardInterrupt (Ctrl+C) to gracefully exit the program
-            except KeyboardInterrupt:
-                break
+# Create threads for the HTTP server and Kafka consumer
+http_server_thread = threading.Thread(target=run_http_server)
+kafka_consumer_thread = threading.Thread(target=process_kafka_messages)
 
-    # Close the Kafka consumer
-    consumer.close()
+# Start the threads
+http_server_thread.start()
+kafka_consumer_thread.start()
+
+# Wait for the threads to finish
+http_server_thread.join()
+kafka_consumer_thread.join()
