@@ -1,7 +1,9 @@
 from confluent_kafka import Consumer, KafkaError
+from kafka import KafkaProducer
 import psycopg2
 from psycopg2 import sql
 import json
+import time
 
 # Define Kafka consumer configuration
 consumer_config = {
@@ -20,20 +22,42 @@ db_config = {
 }
 
 
+topic_source = "questions_processor_failed"
 # Create a Kafka consumer instance
 consumer = Consumer(consumer_config)
 
 # Subscribe to the Kafka topic
-consumer.subscribe(['questions_processor_failed'])  # Replace 'your_topic' with your Kafka topic name
+consumer.subscribe([topic_source])  # Replace 'your_topic' with your Kafka topic name
+
+producer = KafkaProducer(
+        bootstrap_servers='localhost:9092',
+        key_serializer=lambda k: json.dumps(k).encode('utf-8'),  # Serialize the key as JSON
+        value_serializer=lambda v: json.dumps(v).encode('utf-8')  # Serialize the value as JSON
+)
+
+
+# Function to check if the database is up
+def is_database_up():
+    try:
+        conn = psycopg2.connect(**db_config)
+        conn.close()
+        return True
+    except Exception as e:
+        print(f'Database is not up: {str(e)}')
+        return False
+
 
 # Continuously poll for new messages
 while True:
     msg = consumer.poll(1.0)  # Adjust the timeout as needed
-    print("poll messages")
-
     if msg is None:
-        print("There is no messages")
-        break
+        continue
+
+    # Periodically check if the database is up (every 5 seconds)
+    while not is_database_up():
+        time.sleep(5)
+
+    print("Database is up and running.")
 
     if msg.error():
         # Handle any Kafka errors
@@ -74,11 +98,24 @@ while True:
             # If processing succeeds, commit the offset
             print("commit message ")
             consumer.commit()
+        except (psycopg2.OperationalError, psycopg2.Error) as db_error:
+                    print(f'Database error: {db_error}')
+                    message = {
+                        "id_user": id_user,
+                        "name": name,
+                        "questionnaire_type": questionnaire_type,
+                        "id_question": id_question,
+                        "respuesta": respuesta,
+                        "create_timestamp": create_timestamp
+                    }
+                    key = f'{id_user}+{id_question}'
+                    producer.send(topic_source, key=key, value=message)
+                    producer.flush()
+                    print("Message sent to Kafka topic.")
         except Exception as e:
             # Handle the exception (e.g., log it)
             print(f'Error processing message: {str(e)}')
-            consumer.close()
-            break
+            continue
             # Optionally, you can choose not to commit the offset
             # to mark the message as unprocessed
             # This will cause the same message to be retrieved again
