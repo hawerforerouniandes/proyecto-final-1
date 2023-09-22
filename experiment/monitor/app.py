@@ -83,7 +83,7 @@ logging.basicConfig(filename='monitorlogs.log',
                     datefmt='%H:%M:%S',
                     level=logging.INFO)
 
-
+logging.getLogger().addHandler(logging.StreamHandler())
 logger = logging.getLogger('Monitor')
 if __name__ == '__main__':
     call_api_endpoint()
