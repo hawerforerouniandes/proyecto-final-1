@@ -82,8 +82,10 @@ logging.basicConfig(filename='monitorlogs.log',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.INFO)
-
-logging.getLogger().addHandler(logging.StreamHandler())
+format = logging.Formatter("%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s")
+ch = logging.StreamHandler()
+ch.setFormatter(format)
+logging.getLogger().addHandler(ch)
 logger = logging.getLogger('Monitor')
 if __name__ == '__main__':
     call_api_endpoint()
