@@ -92,7 +92,7 @@
         </ConfigTestElement>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Question Test 500 Normal" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Question Test 500" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <stringProp name="LoopController.loops">1</stringProp>
@@ -114,7 +114,7 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-    &quot;id_user&quot;:&quot;500_NORMAL&quot;,&#xd;
+    &quot;id_user&quot;:&quot;500_FALLO_PROCESSOR&quot;,&#xd;
     &quot;name&quot;:&quot;nombre del usuario&quot;,&#xd;
     &quot;questionnaire_type&quot;:&quot;TECH&quot;,&#xd;
     &quot;id_question&quot;:&quot;bbbbxxbx&quot;,&#xd;
@@ -260,7 +260,7 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-    &quot;id_user&quot;:&quot;1000_NORMAL&quot;,&#xd;
+    &quot;id_user&quot;:&quot;1000_FALLO_PROCESSOR&quot;,&#xd;
     &quot;name&quot;:&quot;nombre del usuario&quot;,&#xd;
     &quot;questionnaire_type&quot;:&quot;TECH&quot;,&#xd;
     &quot;id_question&quot;:&quot;bbbbxxbx&quot;,&#xd;
@@ -406,7 +406,7 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-    &quot;id_user&quot;:&quot;2000_NORMAL&quot;,&#xd;
+    &quot;id_user&quot;:&quot;2000_FALLO_PROCESSOR&quot;,&#xd;
     &quot;name&quot;:&quot;nombre del usuario&quot;,&#xd;
     &quot;questionnaire_type&quot;:&quot;TECH&quot;,&#xd;
     &quot;id_question&quot;:&quot;bbbbxxbx&quot;,&#xd;
@@ -488,7 +488,7 @@
                 <connectTime>true</connectTime>
               </value>
             </objProp>
-            <stringProp name="filename">/Users/jose_garay/Documents/talleres-uniandes/proyecto-final/proyecto-final-1/experiment/load-test/results.csv</stringProp>
+            <stringProp name="filename">/Users/jose_garay/Documents/talleres-uniandes/proyecto-final/proyecto-final-1/experiment/load-test/results_fallo_bd_antes.jtl</stringProp>
           </ResultCollector>
           <hashTree/>
           <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
@@ -525,7 +525,7 @@
                 <connectTime>true</connectTime>
               </value>
             </objProp>
-            <stringProp name="filename"></stringProp>
+            <stringProp name="filename">/Users/jose_garay/Documents/talleres-uniandes/proyecto-final/proyecto-final-1/experiment/load-test/results_fallo_bd_antes.jtl</stringProp>
           </ResultCollector>
           <hashTree/>
         </hashTree>
