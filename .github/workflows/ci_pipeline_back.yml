@@ -1,0 +1,25 @@
+# Ejemplo de github action para probar python
+# Docs: https://docs.github.com/es/actions/using-workflows/workflow-syntax-for-github-actions
+name: CI/CD Pipeline Back
+
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      matrix:
+        python-version: [ 3.11 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Run tests for public
+        working-directory: ./backend/public
+        run: |
+          pip install pipenv
+          pip install httmock
+          pipenv sync --system --dev
+          export VIRTUAL_ENV="$(pipenv --venv)" PATH="$(pipenv --venv)/bin:$PATH"
+          pytest --cov=src -v -s --cov-fail-under=80

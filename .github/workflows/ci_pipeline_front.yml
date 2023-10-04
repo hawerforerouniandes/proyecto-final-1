@@ -1,0 +1,27 @@
+# Ejemplo de github action para probar python
+# Docs: https://docs.github.com/es/actions/using-workflows/workflow-syntax-for-github-actions
+name: CI/CD Pipeline Front
+
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  build-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16.x
+    - name: Install dependencies
+      working-directory: ./frontend/abc-jobs-ui
+      run: npm install
+    - name: Build
+      working-directory: ./frontend/abc-jobs-ui
+      run: npm run build
+    - name: Test
+      working-directory: ./frontend/abc-jobs-ui
+      run: npm test
